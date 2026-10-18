@@ -40,7 +40,7 @@ Recent work (from git history): frontend-to-backend integration (real API client
 | Frontend API client layer | Yes | Every API function mapped to its backend route |
 | Frontend types | Yes | `MIRRORS` edges to backend schemas with field mismatches |
 | Tests | Yes, file level | 36 backend, 42 frontend test files |
-| Docker, Compose, monitoring, CI config | No | See `docs/deployment/Deployment.md` (root `docker-compose.yml`, `deploy/Caddyfile`, `.github/workflows/images.yml`) |
+| Docker, Compose, monitoring, CI config | No | See `docs/deployment/Deployment.md` (root `docker-compose.yml`, `deploy/Caddyfile`; each submodule's `.github/workflows/ci.yml` builds its image) |
 | Individual settings fields usage | No | Fields listed on `module:app.core.config`; use grep for usage (ADR-013) |
 | CSS, static assets, `components.json` | No | Not useful for navigation |
 

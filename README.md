@@ -12,6 +12,7 @@
   <a href="#screenshots">Screenshots</a> •
   <a href="#quick-start">Quick Start</a> •
   <a href="#development">Development</a> •
+  <a href="https://github.com/Ludexis">Organization</a> •
   <a href="#documentation">Documentation</a>
 </p>
 
@@ -167,8 +168,15 @@ This adds Prometheus, Node Exporter and Grafana on port 3000 (`GRAFANA_PORT`). G
 
 PostgreSQL and Redis run in Docker. The API, worker, scheduler and the Next.js dev server run on the host, with hot reload.
 
+The backend and frontend are separate repositories, checked out here as submodules:
+
+| Repository | Path | Contents |
+| ---------- | ---- | -------- |
+| [ludexis-backend](https://github.com/Ludexis/ludexis-backend) | `backend/` | FastAPI API, scanner, metadata providers, Celery workers, migrations |
+| [ludexis-frontend](https://github.com/Ludexis/ludexis-frontend) | `frontend/` | Next.js web app |
+
 ```bash
-git clone https://github.com/InvictusRex/Ludexis.git
+git clone --recurse-submodules https://github.com/InvictusRex/Ludexis.git
 cd Ludexis
 docker compose -f docker-compose.dev.yml up -d   # PostgreSQL on 5432, Redis on 6379 (localhost only)
 ```
@@ -179,7 +187,7 @@ docker compose -f docker-compose.dev.yml up -d   # PostgreSQL on 5432, Redis on 
 cd backend
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
-pip install -r ../requirements-dev.txt
+pip install -r requirements-dev.txt
 cp .env.example .env                 # add TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET for IGDB
 alembic upgrade head
 uvicorn main:app --reload            # http://localhost:8000, API docs at /docs
@@ -207,6 +215,8 @@ npm run dev                          # http://localhost:3000
 cd backend && pytest
 cd frontend && npx vitest run
 ```
+
+After pulling, run `git submodule update --init` to move `backend/` and `frontend/` to the commits this repository points at. Changes to the code go to the backend or frontend repository; see the [contributing guide](https://github.com/Ludexis/.github/blob/main/CONTRIBUTING.md).
 
 ## Documentation
 

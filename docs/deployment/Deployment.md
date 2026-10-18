@@ -13,7 +13,7 @@ Ludexis is deployed with Docker Compose. This guide covers the production stack,
 ## Quick start
 
 1. Copy `.env.example` to `.env` and set `GAMES_PATH` (mounted read-only at `/games`), `TZ` and `POSTGRES_PASSWORD`.
-2. `docker compose up -d` (add `--build` to build from the checkout instead of pulling `ghcr.io/invictusrex/ludexis-*`).
+2. `docker compose up -d` (add `--build` to build from the checkout instead of pulling `ghcr.io/ludexis/ludexis-*`).
 3. Open `http://<host>:8420` and sign in as `admin` / `admin`.
 
 ### First sign-in
@@ -129,7 +129,7 @@ The demo seeds an `admin` account (password `DEMO_ADMIN_PASSWORD`, default `Admi
 
 ## Images
 
-`.github/workflows/images.yml` runs the backend and frontend test workflows, and only when both pass builds `ludexis-backend` and `ludexis-frontend` for `linux/amd64` and `linux/arm64`: on every push to `main` (tags `main` and `latest`) and on `v*` tags (`1.2.3`, `1.2`). The frontend's build stages run on the build machine's architecture; only the copy-only runtime stage is per platform.
+Each image is built by the CI workflow of its own repository, [ludexis-backend](https://github.com/Ludexis/ludexis-backend) and [ludexis-frontend](https://github.com/Ludexis/ludexis-frontend), checked out here as the `backend` and `frontend` submodules. The workflow runs that repository's tests, and only when they pass publishes `ghcr.io/ludexis/ludexis-backend` or `ghcr.io/ludexis/ludexis-frontend` for `linux/amd64` and `linux/arm64`: on every push to `main` (tags `main` and `latest`) and on `v*` tags (`1.2.3`, `1.2`). The frontend's build stages run on the build machine's architecture; only the copy-only runtime stage is per platform.
 
 Both images run unprivileged: the backend as `ludexis` (uid 1000), the frontend as `node`. A new `ludexis_data` volume starts out owned by uid 1000; the games folder only needs to be readable by it.
 

@@ -127,7 +127,7 @@ backend/
 └── alembic.ini
 ```
 
-`requirements.txt` lives at the repository root, not under `backend/`.
+The backend is its own repository, [ludexis-backend](https://github.com/Ludexis/ludexis-backend), checked out as the `backend` submodule; `requirements.txt` and `requirements-dev.txt` live at its root.
 
 Each package fulfills a specific architectural role.
 
