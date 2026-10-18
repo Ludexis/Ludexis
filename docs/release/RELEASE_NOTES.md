@@ -1,5 +1,26 @@
 # Ludexis Release Notes
 
+## v1.2.0 (2026-10-18)
+
+### Edge devices
+
+- Another machine, such as a laptop, can scan drives attached to it and send the listings to the server, which keeps the only database. Add one under **Admin → Edge**, download its install files for Linux or Windows, and run the installer.
+- Each library has a **Location**: the server or one edge device. A scan of an edge library waits until that device checks in.
+- After the first scan a library is tied to its drive's UUID or serial, so it is found again under another mount point or drive letter.
+- Linux: a known drive is mounted read-only and scanned when it is plugged in. Windows: the `ludexis-edge` command (`start`, `restart`, `stop`, `status`, `logs`, `update`) maps drives by serial.
+- Optionally an edge device looks up metadata from its own network.
+- A server without edge devices works as before.
+
+### Upgrading
+
+- Each container now runs `ludexis server`, `ludexis worker` or `ludexis beat`, and reads `.env` through `env_file`. Download the new `docker-compose.yml`; an existing `.env` keeps working. `POSTGRES_USER` and `POSTGRES_DB` default to `ludexis`.
+- The demo stack (`docker-compose.demo.yml`) was removed.
+- Migrations run on start; they add the edge device table and new library and job columns. To pin this release, set `LUDEXIS_VERSION=1.2.0` in `.env`.
+
+### Fixes
+
+- Changing a cover no longer fails when a metadata source returns no details.
+
 ## v1.1.0 (2026-10-18)
 
 Ludexis is now split into three repositories under the [Ludexis organization](https://github.com/Ludexis): this one for deployment and documentation, plus [ludexis-backend](https://github.com/Ludexis/ludexis-backend) and [ludexis-frontend](https://github.com/Ludexis/ludexis-frontend), checked out as submodules.
