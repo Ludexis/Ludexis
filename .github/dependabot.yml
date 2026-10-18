@@ -1,0 +1,10 @@
+# Opens a pull request when ludexis-backend or ludexis-frontend has new commits on main.
+version: 2
+updates:
+  - package-ecosystem: gitsubmodule
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: chore
+      include: scope
