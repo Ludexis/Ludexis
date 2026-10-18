@@ -1,6 +1,6 @@
 # Ludexis Deployment Guide
 
-Ludexis is deployed with Docker Compose. This guide covers the production stack, first sign-in, configuration, storage, updates, backups, HTTPS, monitoring and the development and demo stacks.
+Ludexis is deployed with Docker Compose. This guide covers the production stack, first sign-in, configuration, storage, updates, backups, HTTPS, monitoring, edge devices and the development stack.
 
 ## Compose files
 
@@ -8,7 +8,8 @@ Ludexis is deployed with Docker Compose. This guide covers the production stack,
 | ---- | ------- |
 | `docker-compose.yml` | Production: `db`, `redis`, `backend`, `worker`, `beat`, `frontend` and `proxy` (Caddy, the only published port). Optional `monitoring` profile: Prometheus, Node Exporter and Grafana. |
 | `docker-compose.dev.yml` | Development: PostgreSQL and Redis on localhost; the application runs on the host. |
-| `docker-compose.demo.yml` | Evaluation: the full stack built from source and seeded with a demo dataset. |
+
+Every container reads `.env` through `env_file`; the compose file itself only fixes the paths inside the containers. The backend, worker and beat run the same image with `command: ludexis server`, `ludexis worker` or `ludexis beat`, and their health checks call `ludexis health <role>`. `docker compose exec backend <command>` still runs any other command, such as `python -m scripts.reset_password`.
 
 ## Quick start
 
@@ -46,7 +47,7 @@ The frontend image is built with relative `/api` and `/media` URLs, so it works 
 | `LUDEXIS_DOMAIN` | empty | Domain for automatic HTTPS. Empty serves plain HTTP. |
 | `LUDEXIS_VERSION` | `latest` | Image tag. `latest` follows the main branch; `1.2.3` or `1.2` pins a release. |
 | `TZ` | `UTC` | Time zone of scheduled tasks. |
-| `POSTGRES_PASSWORD` | `ludexis` | Database password inside the stack. |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | `ludexis` / `ludexis` / `ludexis` | Database account, read by the database container and by the backend, which builds its connection URL from them. Only reachable inside the stack. |
 | `DEFAULT_ADMIN_USERNAME` / `DEFAULT_ADMIN_PASSWORD` | `admin` / `admin` | First-start account; must change its password at first sign-in. |
 | `JWT_SECRET_KEY` | generated | Leave empty to generate one into `/data/config/jwt_secret`. If set, at least 32 characters. |
 | `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | empty | IGDB credentials (also settable in Admin > Settings). |
@@ -118,14 +119,29 @@ docker compose -f docker-compose.dev.yml up -d
 
 PostgreSQL (5432) and Redis (6379) listen on localhost (IPv4 and IPv6). Run the backend, worker, beat and frontend on the host as described in the README's Developer Setup; `backend/.env.example` points at these services.
 
-## Demo stack
+## Edge devices
 
-```bash
-export JWT_SECRET_KEY=$(openssl rand -hex 32)
-docker compose -f docker-compose.demo.yml up -d --build
-```
+An edge device scans drives attached to another machine, such as a laptop, and sends what it finds to this server, which keeps the only database. It is optional: libraries located on the server work exactly as before.
 
-The demo seeds an `admin` account (password `DEMO_ADMIN_PASSWORD`, default `Admin123!`) and sample entries, and serves the web app on port 3000 and the API on 8000. Its containers share no config volume, so the JWT secret must be passed in.
+1. **Admin > Edge > Add edge**, give it a name. The token is shown once; download the install files for Linux or Windows right away (a new token can be issued later from the device's menu).
+2. On that machine, with Docker installed:
+   - Linux: `unzip ludexis-edge-linux.zip && cd ludexis-edge && sudo ./install.sh`. It installs to `/opt/ludexis-edge`, adds the `ludexis-edge` command, a udev rule and `ludexis-drive@.service`, and starts the device.
+   - Windows: unzip, then in PowerShell `powershell -ExecutionPolicy Bypass -File install.ps1`. It installs to `%LOCALAPPDATA%\Ludexis\edge`, puts `ludexis-edge` on your PATH and starts the device (and Docker Desktop if needed).
+3. **Admin > Libraries > Add library**: name, the folder path as that machine shows it (`/media/you/Games`, `E:\Games`), and the device as its **Location**. The device scans it at its next check-in (every 15 seconds); while it is off, the scan waits.
+
+After its first scan a library is tied to its drive's UUID or volume serial, so it is found again under another mount point or drive letter, and moving a drive between Linux and Windows keeps it. Entries are never deleted by a scan: an unplugged drive makes the library offline, and files missing from a listing become Missing until they return.
+
+| Command on the device | What it does |
+| --------------------- | ------------ |
+| `ludexis-edge start` | Start the device (does nothing if it runs) |
+| `ludexis-edge restart` | Check Docker, the server, the token and the drives; map drive letters (Windows) or extra folders (Linux, `EDGE_ROOTS` in `.env`); recreate the container; print a summary |
+| `ludexis-edge status` | The summary without restarting |
+| `ludexis-edge stop`, `logs`, `update` | Stop it; follow its log; pull the newest image and restart |
+
+- **Linux, automatic:** plugging in a drive that holds a library mounts it read-only at `/mnt/ludexis/<UUID>` (unless the desktop mounted it first) and starts the device; with **Scan on connect** on (the default) the server queues the scan. Library folders must be under `/media`, `/mnt` or `/run/media`, or a folder listed in `EDGE_ROOTS`.
+- **Windows:** Docker Desktop only sees drives that existed when the container started, so run `ludexis-edge restart` after plugging a drive in. Mapped network drives are not visible to Docker Desktop.
+- **Metadata here:** with this switch on, the device looks up metadata for its new games itself and the server stores the results, for sources that refuse the server's address. Keys for IGDB go in the device's `.env`; extra providers in its `providers/` folder with `PROVIDER_PLUGINS_DIR=/providers`.
+- Keep the device on the server's release (`LUDEXIS_VERSION` in its `.env`, then `ludexis-edge update`); Admin > Edge flags a device that runs another release.
 
 ## Images
 
@@ -140,4 +156,6 @@ Both images run unprivileged: the backend as `ludexis` (uid 1000), the frontend 
 | Backend restarts | `docker compose logs backend`: database reachable, migrations applied, `JWT_SECRET_KEY` at least 32 characters if set. |
 | Library shows Offline | The folder under `/games` is missing or empty while the library has entries; check the `GAMES_PATH` mount. |
 | Jobs stay pending | `docker compose logs worker` and the worker health check. |
+| Edge device shows Offline | On that machine: `ludexis-edge status` (server reachable, token accepted, drives found). A refused token needs new install files from Admin > Edge. |
+| Edge library shows "not mapped" (Windows) | Docker Desktop only sees drive letters that existed when the container started: run `ludexis-edge restart`. |
 | Forgot the administrator password | Another administrator can reset it in Admin > Users, or on the server: `docker compose exec backend python -m scripts.reset_password <username>` (back to the default password, to be changed at the next sign-in). |

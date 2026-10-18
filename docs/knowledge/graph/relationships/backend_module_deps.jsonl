@@ -184,3 +184,5 @@
 {"source_id": "module:app.providers.plugins", "target_id": "layer:provider", "type": "BELONGS_TO", "source_file": "backend/app/providers/plugins.py", "source_line": 1, "confidence": 1.0, "inferred": false, "last_verified_at": "2026-10-13T00:00:00Z"}
 {"source_id": "module:app.providers.notices", "target_id": "domain:metadata", "type": "BELONGS_TO", "source_file": "backend/app/providers/notices.py", "source_line": 1, "confidence": 1.0, "inferred": false, "last_verified_at": "2026-10-13T00:00:00Z"}
 {"source_id": "module:app.providers.notices", "target_id": "layer:provider", "type": "BELONGS_TO", "source_file": "backend/app/providers/notices.py", "source_line": 1, "confidence": 1.0, "inferred": false, "last_verified_at": "2026-10-13T00:00:00Z"}
+{"source_id": "module:app.core.edge_auth", "target_id": "layer:core", "type": "BELONGS_TO", "source_file": "backend/app/core/edge_auth.py", "source_line": 1, "confidence": 1.0, "inferred": false}
+{"source_id": "module:app.core.edge_auth", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/core/edge_auth.py", "source_line": 1, "confidence": 1.0, "inferred": false}

@@ -262,3 +262,17 @@
 {"source_id": "type:lib/types/metadata.ProviderNotice", "target_id": "schema:app.schemas.metadata.ProviderNotice", "type": "MIRRORS", "source_file": "frontend/lib/types/metadata.ts", "source_line": 29, "confidence": 1.0, "inferred": true, "description": "fields match"}
 {"source_id": "type:lib/types/metadata.ProviderNotice", "target_id": "domain:metadata", "type": "BELONGS_TO", "source_file": "frontend/lib/types/metadata.ts", "source_line": 29, "confidence": 1.0, "inferred": false}
 {"source_id": "type:lib/types/metadata.ProviderNotice", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/metadata.ts", "source_line": 29, "confidence": 1.0, "inferred": false}
+{"source_id": "typemod:lib/types/edge", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 1, "confidence": 1.0, "inferred": false}
+{"source_id": "typemod:lib/types/edge", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 1, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeStatus", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 1, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeStatus", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 1, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeOS", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 2, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeOS", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 2, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDrive", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 4, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDrive", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 4, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDevice", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 13, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDevice", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 13, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDeviceCreated", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 31, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDeviceCreated", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 31, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDeviceUpdate", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 35, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeDeviceUpdate", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 35, "confidence": 1.0, "inferred": false}

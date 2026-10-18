@@ -33,6 +33,7 @@ Each domain file lists its backend and frontend files, graph IDs, endpoints (wit
 | [auth](domains/auth.md) | `backend/app/api/auth.py`, `backend/app/api/setup.py` | `/auth/login`, `/auth/setup`, `/account` |
 | [collection](domains/collection.md) | `backend/app/api/collections.py` | `/collections`, `/collections/[id]`, `/collections/[id]/edit`, `/collections/new`, `/admin/collections` |
 | [core](domains/core.md) | `backend/app/api/health.py`, `backend/main.py`, `backend/app/core/` | root layout, shared UI |
+| [edge](domains/edge.md) | `backend/app/api/edge_devices.py`, `backend/app/api/edge_agent.py` | `/admin/edge` (and the Location field of `/admin/libraries`) |
 | [developer](domains/developer.md) | `backend/app/api/developers.py` | `/developers`, `/developers/[id]` |
 | [franchise](domains/franchise.md) | `backend/app/api/franchises.py` | `/franchises`, `/franchises/[id]` |
 | [genre](domains/genre.md) | (no router; genres are synced by metadata enrichment) | none |
@@ -56,6 +57,7 @@ Each domain file lists its backend and frontend files, graph IDs, endpoints (wit
 | [scan](flows/scan.md) | Full and incremental library scans, duplicate detection |
 | [metadata](flows/metadata.md) | Provider search, auto-match, scheduled refresh, conflict resolution |
 | [artwork](flows/artwork.md) | Upload, replace, auto-download, validation, garbage collection |
+| [edge-scan](flows/edge-scan.md) | Library on an edge device -> check-in -> scan and hash on the device -> listing uploaded -> stored by the server worker |
 | [jobs](flows/jobs.md) | Job start, Celery dispatch, progress, cancel, beat schedule |
 
 ---

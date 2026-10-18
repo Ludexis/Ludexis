@@ -41,6 +41,7 @@ Game launchers expect installed games. Collections of archives, installers, visu
 - **Artwork**: covers, banners, logos and screenshots are downloaded and stored locally. Covers are cropped to fit the card and kept still, even when the source is animated.
 - **Organisation**: collections, franchises, developers, publishers, genres and tags, plus favourites and a completed mark for every user.
 - **Accounts and access**: roles and permissions, with per-user library access. Restricted games, and any game you hide from its page, are shown only to accounts allowed them.
+- **Edge devices**: a laptop or another PC can scan the drives attached to it and send the results to the server. Add it under Admin > Edge, run its install files, and pick it as a library's location. On Linux, plugging in a known drive mounts it and starts the scan.
 - **Background jobs**: scans, metadata refresh and artwork validation run in workers, with progress, history and schedules in the admin dashboard.
 - **Monitoring**: optional Prometheus, Grafana and Node Exporter profile.
 

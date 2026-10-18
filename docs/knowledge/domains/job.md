@@ -7,7 +7,7 @@ Background job records (`job_history`) and their Celery tasks: start, cancel, li
 |---|---|---|
 | `backend/app/api/jobs.py` | Router `/jobs` | `start_job`, `cancel_job`, `list_jobs`, `read_job` |
 | `backend/app/api/job_monitor.py` | Router `/job-monitor` | `list_workers`, `queue_stats` |
-| `backend/app/services/job.py` | Service | `JobService.list_jobs`, `get_job`, `start_job`, `active_job`, `_select_task`, `cancel_job`, `is_cancelled` |
+| `backend/app/services/job.py` | Service | `JobService.list_jobs`, `get_job`, `start_job`, `queue_edge_scan`, `active_job`, `_select_task`, `cancel_job`, `is_cancelled` |
 | `backend/app/tasks/job_runner.py` | Shared task lifecycle | `run_job`, `summarize`, `JOB_TASK_OPTIONS` |
 | `backend/app/services/job_monitor.py` | Service (Celery inspect) | `JobMonitorService.workers`, `active`, `reserved`, `stats` |
 | `backend/app/repositories/job_history.py` | Repository | `JobHistoryRepository.list_items`, `count_by_status`, `list_by_status`, `get_by_task_id` |
@@ -70,7 +70,7 @@ Background job records (`job_history`) and their Celery tasks: start, cancel, li
 - `JobService.cancel_job` revokes the Celery task (`terminate=True`) and sets `CANCELED`; jobs not `PENDING`/`RUNNING` are returned unchanged. Scans and metadata refresh also poll the row for `CANCELED` between items.
 - `JobService.is_cancelled`, `JobHistoryRepository.list_by_status` and `get_by_task_id` have no callers.
 - `JOB_TASK_OPTIONS`: `autoretry_for=(Exception,)`, `retry_backoff=True`, `max_retries=JOB_MAX_RETRIES` (5), `retry_backoff_max=JOB_RETRY_BACKOFF_MAX` (300 s). `run_job` stores `task.request.retries` in `retry_count`, which `frontend/components/admin/jobs-panel.tsx` shows as "retry N".
-- `start_job(db, user, job_type, details=None, task_kwargs=None)` passes `task_kwargs` to the task (`entry_ids` for enrichment). `active_job` returns a PENDING/RUNNING job of a type; the scheduled tasks use it to avoid overlapping runs.
+- `start_job(db, user, job_type, details=None, task_kwargs=None)` passes `task_kwargs` to the task (`entry_ids` for enrichment). `active_job` returns a PENDING/RUNNING server job of a type; the scheduled tasks use it to avoid overlapping runs. A scan of a library on an edge device becomes a PENDING row with `edge_id` and no Celery message (`queue_edge_scan`, one per library); the device runs it and `ingest_edge_report_task` stores its listing (`docs/knowledge/flows/edge-scan.md`). `fail_stale_jobs` leaves edge jobs to their own limits (7 days PENDING, 1 hour without a check-in while RUNNING).
 - No stale-job recovery: a job left RUNNING by a killed worker stays RUNNING.
 - `GET /api/jobs/` is ordered by `started_at` desc and accepts `job_type`, `status`, `offset`, `limit`.
 - `frontend/components/admin/jobs-panel.tsx` (Admin > Scheduled Tasks, Jobs tab) polls every 5 s while any job is active.
