@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/Ludexis/ludexis-backend.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/Ludexis/ludexis-frontend.git

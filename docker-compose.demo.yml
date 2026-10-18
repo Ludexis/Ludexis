@@ -38,8 +38,7 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     restart: unless-stopped
     command: sh -c "alembic upgrade head && python -m scripts.seed_demo && uvicorn main:app --host 0.0.0.0 --port 8000"
     env_file: ./backend/.env.docker
@@ -66,8 +65,7 @@ services:
 
   worker:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     restart: unless-stopped
     command: celery -A app.tasks.celery_app worker --loglevel=info
     env_file: ./backend/.env.docker
@@ -82,8 +80,7 @@ services:
 
   beat:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     restart: unless-stopped
     # Starts due scheduled tasks (nightly scan, metadata refresh, artwork validation) every five minutes.
     command: celery -A app.tasks.celery_app beat --loglevel=info --schedule /tmp/celerybeat-schedule

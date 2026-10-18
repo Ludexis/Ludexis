@@ -10,10 +10,9 @@
 # Images come from GHCR; add --build to build them from this checkout instead.
 
 x-backend: &backend
-  image: ghcr.io/invictusrex/ludexis-backend:${LUDEXIS_VERSION:-latest}
+  image: ghcr.io/ludexis/ludexis-backend:${LUDEXIS_VERSION:-latest}
   build:
-    context: .
-    dockerfile: backend/Dockerfile
+    context: ./backend
   restart: unless-stopped
   environment:
     DATABASE_URL: postgresql+psycopg://ludexis:${POSTGRES_PASSWORD:-ludexis}@db:5432/ludexis
@@ -105,7 +104,7 @@ services:
         condition: service_healthy
 
   frontend:
-    image: ghcr.io/invictusrex/ludexis-frontend:${LUDEXIS_VERSION:-latest}
+    image: ghcr.io/ludexis/ludexis-frontend:${LUDEXIS_VERSION:-latest}
     build:
       context: ./frontend
     restart: unless-stopped
