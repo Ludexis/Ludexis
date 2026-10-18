@@ -64,9 +64,9 @@ Ludexis runs as one Docker Compose stack: the web app, API, worker, scheduler, P
 **Requirements:** Docker Engine 24+ with Compose, 2 GB RAM (4 GB for large libraries), and a folder of games.
 
 ```bash
-curl -O https://raw.githubusercontent.com/InvictusRex/Ludexis/main/docker-compose.yml
-curl -O https://raw.githubusercontent.com/InvictusRex/Ludexis/main/.env.example
-mkdir deploy && curl -o deploy/Caddyfile https://raw.githubusercontent.com/InvictusRex/Ludexis/main/deploy/Caddyfile
+curl -O https://raw.githubusercontent.com/Ludexis/Ludexis/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/Ludexis/Ludexis/main/.env.example
+mkdir deploy && curl -o deploy/Caddyfile https://raw.githubusercontent.com/Ludexis/Ludexis/main/deploy/Caddyfile
 cp .env.example .env
 ```
 
@@ -176,7 +176,7 @@ The backend and frontend are separate repositories, checked out here as submodul
 | [ludexis-frontend](https://github.com/Ludexis/ludexis-frontend) | `frontend/` | Next.js web app |
 
 ```bash
-git clone --recurse-submodules https://github.com/InvictusRex/Ludexis.git
+git clone --recurse-submodules https://github.com/Ludexis/Ludexis.git
 cd Ludexis
 docker compose -f docker-compose.dev.yml up -d   # PostgreSQL on 5432, Redis on 6379 (localhost only)
 ```
@@ -229,6 +229,10 @@ After pulling, run `git submodule update --init` to move `backend/` and `fronten
 | [Integrations](docs/integrations/) | cURL, Python and JavaScript examples |
 | [Backlogs](docs/backlogs/) | Roadmap and planned work |
 | [Release notes](docs/release/RELEASE_NOTES.md) | Changes per release |
+
+## Author
+
+Ludexis is created and maintained by **Rupankar Majumdar ([@InvictusRex](https://github.com/InvictusRex))**.
 
 ## License
 
