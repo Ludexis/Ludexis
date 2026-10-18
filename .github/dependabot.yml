@@ -1,10 +1,12 @@
-# Opens a pull request when ludexis-backend or ludexis-frontend has new commits on main.
+# Opens a pull request when ludexis-backend or ludexis-frontend has new commits on main, checking every 10 minutes.
 version: 2
 updates:
   - package-ecosystem: gitsubmodule
     directory: /
     schedule:
-      interval: daily
+      interval: cron
+      cronjob: "*/10 * * * *"
+      timezone: Asia/Kolkata
     commit-message:
       prefix: chore
       include: scope
