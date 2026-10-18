@@ -138,9 +138,9 @@ After its first scan a library is tied to its drive's UUID or volume serial, so 
 | `ludexis-edge status` | The summary without restarting |
 | `ludexis-edge stop`, `logs`, `update` | Stop it; follow its log; pull the newest image and restart |
 
-- **Linux, automatic:** plugging in a drive that holds a library mounts it read-only at `/mnt/ludexis/<UUID>` (unless the desktop mounted it first) and starts the device; with **Scan on connect** on (the default) the server queues the scan. Library folders must be under `/media`, `/mnt` or `/run/media`, or a folder listed in `EDGE_ROOTS`.
-- **Windows:** Docker Desktop only sees drives that existed when the container started, so run `ludexis-edge restart` after plugging a drive in. Mapped network drives are not visible to Docker Desktop.
-- **Metadata here:** with this switch on, the device looks up metadata for its new games itself and the server stores the results, for sources that refuse the server's address. Keys for IGDB go in the device's `.env`; extra providers in its `providers/` folder with `PROVIDER_PLUGINS_DIR=/providers`.
+- **Linux, automatic:** plugging in a drive that holds a library mounts it read-only at `/mnt/ludexis/<UUID>` (unless the desktop mounted it first) and starts the device; with **Autoscan** on (the default) the server queues the scan. Library folders must be under `/media`, `/mnt` or `/run/media`, or a folder listed in `EDGE_ROOTS`.
+- **Windows:** run `ludexis-edge restart` after plugging a drive in or unlocking an encrypted volume; it makes the drive visible to Docker Desktop and maps it into the container. Mapped network drives are not visible to Docker Desktop.
+- **Scans that start on their own** (a drive connecting, a schedule) read no files: new or resized files are only counted, and the Libraries page asks whether to check them. A scan you start reads only new or changed files; a drive that comes back is never hashed again in full. Metadata is always looked up by the server.
 - Keep the device on the server's release (`LUDEXIS_VERSION` in its `.env`, then `ludexis-edge update`); Admin > Edge flags a device that runs another release.
 
 ## Images

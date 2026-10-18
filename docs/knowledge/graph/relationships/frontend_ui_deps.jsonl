@@ -512,3 +512,5 @@
 {"source_id": "comp:components/shell/provider-notices", "target_id": "domain:metadata", "type": "BELONGS_TO", "source_file": "frontend/components/shell/provider-notices.tsx", "source_line": 28, "confidence": 1.0, "inferred": false, "last_verified_at": "2026-10-13T00:00:00Z"}
 {"source_id": "page:/admin/edge", "target_id": "layer:frontend-page", "type": "BELONGS_TO", "source_file": "frontend/app/(app)/admin/edge/page.tsx", "source_line": 42, "confidence": 1.0, "inferred": false}
 {"source_id": "page:/admin/edge", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/app/(app)/admin/edge/page.tsx", "source_line": 42, "confidence": 1.0, "inferred": false}
+{"source_id": "ctx:contexts/confirm-context", "target_id": "domain:admin", "type": "BELONGS_TO", "source_file": "frontend/contexts/confirm-context.tsx", "source_line": 25, "confidence": 1.0, "inferred": false}
+{"source_id": "ctx:contexts/confirm-context", "target_id": "layer:frontend-context", "type": "BELONGS_TO", "source_file": "frontend/contexts/confirm-context.tsx", "source_line": 25, "confidence": 1.0, "inferred": false}

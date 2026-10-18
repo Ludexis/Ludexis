@@ -238,7 +238,7 @@ By moving these operations into background workers, API responsiveness remains u
 
 Drives attached to another machine, such as a laptop, are scanned by an edge device on that machine: the backend image started with `ludexis edge`, with no database of its own. It connects outward to the server over HTTPS with its own token, checks in every 15 seconds, scans and hashes the libraries assigned to it, and uploads each listing, which the server's worker stores like a local scan. The server stays the only database, so nothing has to be merged, and a server without edge devices works exactly as before.
 
-On Linux, plugging in a drive that holds a library mounts it read-only by UUID through a udev rule and a systemd service and starts the device; on Windows, the `ludexis-edge` command maps the drive letters and restarts it. Optionally a device also looks up metadata from its own network address, for sources that refuse the server's.
+On Linux, plugging in a drive that holds a library mounts it read-only by UUID through a udev rule and a systemd service and starts the device; on Windows, the `ludexis-edge` command maps the drive letters and restarts it.
 
 ---
 

@@ -276,3 +276,5 @@
 {"source_id": "type:lib/types/edge.EdgeDeviceCreated", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 31, "confidence": 1.0, "inferred": false}
 {"source_id": "type:lib/types/edge.EdgeDeviceUpdate", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 35, "confidence": 1.0, "inferred": false}
 {"source_id": "type:lib/types/edge.EdgeDeviceUpdate", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 35, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeLibrarySummary", "target_id": "layer:frontend-type", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 13, "confidence": 1.0, "inferred": false}
+{"source_id": "type:lib/types/edge.EdgeLibrarySummary", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "frontend/lib/types/edge.ts", "source_line": 13, "confidence": 1.0, "inferred": false}

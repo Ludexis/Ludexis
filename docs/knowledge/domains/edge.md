@@ -7,10 +7,10 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 |---|---|---|
 | `backend/app/api/edge_devices.py` | Router `/edge-devices` (web app, `ACCESS_ADMIN`) | `list_edge_devices`, `create_edge_device`, `update_edge_device`, `delete_edge_device`, `rotate_edge_token`, `download_edge_bundle` |
 | `backend/app/api/edge_agent.py` | Router `/edge/agent` (edge token only) | `poll`, `libraries`, `library_state`, `job_progress`, `job_failed`, `metadata_result`, `job_report` |
-| `backend/app/services/edge.py` | Service | `EdgeService.poll`, `library_state`, `progress`, `fail`, `save_report`, `ingest`, `apply_metadata`, `bundle`, `rotate_token`, `delete` |
+| `backend/app/services/edge.py` | Service | `EdgeService.poll`, `library_state`, `progress`, `fail`, `save_report`, `ingest`, `bundle`, `rotate_token`, `delete` |
 | `backend/app/core/edge_auth.py` | Token auth | `new_edge_token`, `hash_edge_token`, `get_current_edge` |
 | `backend/app/models/edge_device.py` | Model | `EdgeDevice` (`status` property: PENDING / ONLINE / OFFLINE) |
-| `backend/app/schemas/edge.py` | Schemas | `EdgeDeviceRead`, `EdgeDeviceCreated`, `EdgePoll`, `EdgePollResponse`, `EdgeLibraryState`, `EdgeMetadataResult`, ... |
+| `backend/app/schemas/edge.py` | Schemas | `EdgeDeviceRead`, `EdgeDeviceCreated`, `EdgePoll`, `EdgePollResponse`, `EdgeLibraryState`, `EdgeLibrarySummary`, ... |
 | `backend/app/edge/agent.py` | The device process (`python -m app.edge`) | `EdgeAgent.poll`, `run_forever`, `scan`, `main` |
 | `backend/app/edge/drives.py` | Drives the device sees and where a library's folder is | `linux_drives`, `windows_drives`, `library_root`, `drive_key` |
 | `backend/app/edge/status.py` | `ludexis-edge status` summary, run inside the device container | `main` |
@@ -41,7 +41,7 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 |---|---|---|---|
 | GET | `/api/edge-devices/` | ACCESS_ADMIN | Devices with status, drives, libraries |
 | POST | `/api/edge-devices/` | ACCESS_ADMIN | Add a device; returns its token once |
-| PATCH | `/api/edge-devices/{edge_id}` | ACCESS_ADMIN | Rename, `autoscan`, `match_metadata` |
+| PATCH | `/api/edge-devices/{edge_id}` | ACCESS_ADMIN | Rename, `autoscan` |
 | DELETE | `/api/edge-devices/{edge_id}` | ACCESS_ADMIN | Revoke; its libraries fall back to the server and its waiting jobs are cancelled |
 | POST | `/api/edge-devices/{edge_id}/token` | ACCESS_ADMIN | New token; the old one stops working |
 | POST | `/api/edge-devices/{edge_id}/bundle` | ACCESS_ADMIN + current token | Zip with compose, `.env`, installer for `linux` or `windows` |
@@ -51,7 +51,6 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 | POST | `/api/edge/agent/jobs/{job_id}/progress` | edge token | Progress; answers `cancelled` |
 | POST | `/api/edge/agent/jobs/{job_id}/fail` | edge token | The device could not run the job |
 | POST | `/api/edge/agent/jobs/{job_id}/report` | edge token | Gzipped listing of the whole library |
-| POST | `/api/edge/agent/metadata` | edge token | A metadata match the device looked up |
 
 ## Tables
 `edge_devices`; `libraries.edge_id`, `drive_id`, `drive_subpath`, `drive_mount`, `pending_changes` (unique index `uq_libraries_location_path` on `(coalesce(edge_id, ''), path)`); `job_history.edge_id`, `library_id`.
@@ -67,5 +66,7 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 - Guards keep the server's own behaviour unchanged: the server scan and `verify_archives` skip edge libraries, `JobService.active_job` ignores edge jobs, and `fail_stale_jobs` leaves edge jobs alone until a PENDING one is 7 days old or the device of a RUNNING one has not checked in for an hour.
 - Autoscan (default on): a poll that reports a drive which was not there at the previous poll queues an `INCREMENTAL_SCAN` for the libraries on it, and for offline libraries whose drive is not known yet.
 - Automatic scans (job without `user_id`: autoscan, schedules) hash nothing: files matching by relative path and size are kept with their stored hash, removed files become MISSING, and new or resized files are sent as `pending` and counted in `libraries.pending_changes`. The Libraries page then asks to check them; a scan a user starts hashes only new or changed files and resets the count. A drive that comes back is never re-hashed in full.
-- With `match_metadata` on, the poll hands out up to 20 never-tried entries; the device runs `MetadataService.auto_match` and `MetadataService.get_merged_details` and posts the result, which `EdgeService.apply_metadata` stores with the server's thresholds. The server queues no enrichment for those entries.
+- Metadata is always looked up by the server: an edge scan queues the usual enrichment job (the per-device lookups were removed with `edge_devices.match_metadata`, migration `d2f7a9c41b63`).
+- `/admin/edge` groups each device's libraries under their drive (`groupByDrive`: by `drive_id`, else the connected drive their path lies on, else the drive letter), renames devices from the row menu, and confirms through `useConfirm` (`frontend/contexts/confirm-context.tsx`). The admin overview lists devices in an Edge locations card under Server.
+- Windows `ludexis-edge restart` mounts drives that appeared after Docker Desktop started (`Mount-DockerDrive`, a drvfs mount in the `docker-desktop` WSL distro); without it a late drive (USB, VeraCrypt) is bound as an empty folder.
 - Flow: `docs/knowledge/flows/edge-scan.md`.

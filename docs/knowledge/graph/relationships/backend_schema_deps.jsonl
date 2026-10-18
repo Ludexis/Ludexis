@@ -240,10 +240,6 @@
 {"source_id": "schema:app.schemas.edge.EdgeLibrary", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 75, "confidence": 1.0, "inferred": false}
 {"source_id": "schema:app.schemas.edge.EdgeJob", "target_id": "layer:schema", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 87, "confidence": 1.0, "inferred": false}
 {"source_id": "schema:app.schemas.edge.EdgeJob", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 87, "confidence": 1.0, "inferred": false}
-{"source_id": "schema:app.schemas.edge.EdgeMetadataRequest", "target_id": "layer:schema", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 96, "confidence": 1.0, "inferred": false}
-{"source_id": "schema:app.schemas.edge.EdgeMetadataRequest", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 96, "confidence": 1.0, "inferred": false}
-{"source_id": "schema:app.schemas.edge.EdgeMetadataResult", "target_id": "layer:schema", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 101, "confidence": 1.0, "inferred": false}
-{"source_id": "schema:app.schemas.edge.EdgeMetadataResult", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 101, "confidence": 1.0, "inferred": false}
 {"source_id": "schema:app.schemas.edge.EdgePollResponse", "target_id": "layer:schema", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 109, "confidence": 1.0, "inferred": false}
 {"source_id": "schema:app.schemas.edge.EdgePollResponse", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 109, "confidence": 1.0, "inferred": false}
 {"source_id": "schema:app.schemas.edge.EdgeLibraryState", "target_id": "layer:schema", "type": "BELONGS_TO", "source_file": "backend/app/schemas/edge.py", "source_line": 121, "confidence": 1.0, "inferred": false}

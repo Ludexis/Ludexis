@@ -627,9 +627,6 @@
 {"source_id": "api:POST:/edge/agent/jobs/{job_id}/fail", "target_id": "layer:api", "type": "BELONGS_TO", "source_file": "backend/app/api/edge_agent.py", "source_line": 53, "confidence": 1.0, "inferred": false}
 {"source_id": "api:POST:/edge/agent/jobs/{job_id}/fail", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/api/edge_agent.py", "source_line": 53, "confidence": 1.0, "inferred": false}
 {"source_id": "router:app.api.edge_agent", "target_id": "api:POST:/edge/agent/jobs/{job_id}/fail", "type": "EXPOSES", "source_file": "backend/app/api/edge_agent.py", "source_line": 53, "confidence": 1.0, "inferred": false}
-{"source_id": "api:POST:/edge/agent/metadata", "target_id": "layer:api", "type": "BELONGS_TO", "source_file": "backend/app/api/edge_agent.py", "source_line": 60, "confidence": 1.0, "inferred": false}
-{"source_id": "api:POST:/edge/agent/metadata", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/api/edge_agent.py", "source_line": 60, "confidence": 1.0, "inferred": false}
-{"source_id": "router:app.api.edge_agent", "target_id": "api:POST:/edge/agent/metadata", "type": "EXPOSES", "source_file": "backend/app/api/edge_agent.py", "source_line": 60, "confidence": 1.0, "inferred": false}
 {"source_id": "api:POST:/edge/agent/jobs/{job_id}/report", "target_id": "layer:api", "type": "BELONGS_TO", "source_file": "backend/app/api/edge_agent.py", "source_line": 71, "confidence": 1.0, "inferred": false}
 {"source_id": "api:POST:/edge/agent/jobs/{job_id}/report", "target_id": "domain:edge", "type": "BELONGS_TO", "source_file": "backend/app/api/edge_agent.py", "source_line": 71, "confidence": 1.0, "inferred": false}
 {"source_id": "router:app.api.edge_agent", "target_id": "api:POST:/edge/agent/jobs/{job_id}/report", "type": "EXPOSES", "source_file": "backend/app/api/edge_agent.py", "source_line": 71, "confidence": 1.0, "inferred": false}

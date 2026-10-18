@@ -420,7 +420,7 @@ Libraries on an edge device are never read by the server. The device sends the f
 - Devices authenticate with their own token (`app/core/edge_auth.py`, only the SHA-256 is stored) on the `/api/edge/agent` routes; the admin manages them on `/api/edge-devices`.
 - A device polls every 15 seconds: it reports its drives and receives its libraries and the scans waiting for it. A drive that appears queues a scan when autoscan is on.
 - An uploaded listing is saved on the data volume and stored by `ingest_edge_report_task` under the same job.
-- With metadata matching on for a device, it looks up its new games itself and `apply_metadata` stores the results with the server's thresholds.
+- Jobs without a user (autoscan, schedules) hash nothing: the device sends new or resized files as `pending`, counted in `libraries.pending_changes`; a scan a user starts hashes only new or changed files. Metadata is always looked up by the server.
 - Edge jobs are PENDING rows without a Celery message. They never count as active for the scheduler and are not failed by a worker restart; a waiting job expires after 7 days, a running one when its device stops checking in for an hour.
 
 The device itself is the backend image started with `ludexis edge` (`app/edge/agent.py`), without a database or Redis.

@@ -1110,7 +1110,7 @@ The system supports multiple categories of background work.
 | INTEGRITY_VERIFICATION | `verify_integrity_task` | Re-hash archives: VERIFIED, MISSING or CORRUPTED |
 | DUPLICATE_DETECTION | `detect_duplicates_task` | Group active entries by identical SHA-256 |
 
-Celery beat (a separate process; a `beat` service in every Compose stack) runs a five-minute tick that starts the scheduled tasks stored in the database (library scan 02:00, metadata refresh 03:00, artwork validation 04:00, weekly integrity verification and duplicate detection; server local time, editable under Admin > Scheduled Tasks). A task whose job type is already PENDING or RUNNING is retried at the next tick. The nightly library scan skips libraries whose folder is offline, keeps their entries, and fully rescans a library once it is reachable again.
+Celery beat (a separate process; a `beat` service in every Compose stack) runs a five-minute tick that starts the scheduled tasks stored in the database (library scan 02:00, metadata refresh 03:00, artwork validation 04:00, weekly integrity verification and duplicate detection; server local time, editable under Admin > Scheduled Tasks). A task whose job type is already PENDING or RUNNING is retried at the next tick. The nightly library scan skips libraries whose folder is offline and keeps their entries. Like every scan nobody started, it reads no files: unchanged files are kept, removed ones become MISSING, and new or resized ones are counted in `libraries.pending_changes` for the Libraries page to offer a check. A library that is reachable again is relinked without hashing it again.
 
 All job types follow the same execution model.
 
