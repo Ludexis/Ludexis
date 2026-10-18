@@ -129,7 +129,7 @@ The demo seeds an `admin` account (password `DEMO_ADMIN_PASSWORD`, default `Admi
 
 ## Images
 
-Each image is built by the CI workflow of its own repository, [ludexis-backend](https://github.com/Ludexis/ludexis-backend) and [ludexis-frontend](https://github.com/Ludexis/ludexis-frontend), checked out here as the `backend` and `frontend` submodules. The workflow runs that repository's tests, and only when they pass publishes `ghcr.io/ludexis/ludexis-backend` or `ghcr.io/ludexis/ludexis-frontend` for `linux/amd64` and `linux/arm64`: on every push to `main` (tags `main` and `latest`) and on `v*` tags (`1.2.3`, `1.2`). The frontend's build stages run on the build machine's architecture; only the copy-only runtime stage is per platform.
+Each image is built by the CI workflow of its own repository, [ludexis-backend](https://github.com/Ludexis/ludexis-backend) and [ludexis-frontend](https://github.com/Ludexis/ludexis-frontend), checked out here as the `backend` and `frontend` submodules. The workflow runs that repository's tests, and only when they pass publishes `ghcr.io/ludexis/ludexis-backend` or `ghcr.io/ludexis/ludexis-frontend` for `linux/amd64` and `linux/arm64`: on every push to `main` (tags `main` and `latest`) and on `v*` tags (`1.2.3`, `1.2`). A `v*` tag also creates a GitHub release in that repository; tag all three repositories with the same version, the main one's release text coming from `docs/release/RELEASE_NOTES.md`. The frontend's build stages run on the build machine's architecture; only the copy-only runtime stage is per platform.
 
 Both images run unprivileged: the backend as `ludexis` (uid 1000), the frontend as `node`. A new `ludexis_data` volume starts out owned by uid 1000; the games folder only needs to be readable by it.
 
