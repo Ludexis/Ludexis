@@ -9,51 +9,16 @@
 # For HTTPS, point a domain at this host and set LUDEXIS_DOMAIN, LUDEXIS_PORT=80 and LUDEXIS_HTTPS_PORT=443.
 # Images come from GHCR; add --build to build them from this checkout instead.
 
-x-backend: &backend
-  image: ghcr.io/ludexis/ludexis-backend:${LUDEXIS_VERSION:-latest}
-  build:
-    context: ./backend
-  restart: unless-stopped
-  environment:
-    DATABASE_URL: postgresql+psycopg://ludexis:${POSTGRES_PASSWORD:-ludexis}@db:5432/ludexis
-    REDIS_URL: redis://redis:6379/0
-    CELERY_BROKER_URL: redis://redis:6379/0
-    CELERY_RESULT_BACKEND: redis://redis:6379/0
-    ARTWORK_STORAGE_PATH: /data/artwork
-    # The JWT secret is generated on first start and kept here unless JWT_SECRET_KEY is set.
-    CONFIG_DIR: /data/config
-    JWT_SECRET_KEY: ${JWT_SECRET_KEY:-}
-    TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID:-}
-    TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET:-}
-    STEAMGRIDDB_API_KEY: ${STEAMGRIDDB_API_KEY:-}
-    CORS_ORIGINS: ${CORS_ORIGINS:-}
-    # The account created on first start; it must choose a new password at its first sign-in.
-    DEFAULT_ADMIN_USERNAME: ${DEFAULT_ADMIN_USERNAME:-admin}
-    DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD:-admin}
-    # Scheduled tasks run in this time zone.
-    TZ: ${TZ:-UTC}
-  volumes:
-    - ludexis_data:/data
-    # Games are only read, never modified. Add a library for /games (or a folder inside it) in the web UI.
-    - ${GAMES_PATH:?Set GAMES_PATH to the folder holding your games}:/games:ro
-  depends_on:
-    db:
-      condition: service_healthy
-    redis:
-      condition: service_healthy
-
 services:
   db:
     image: postgres:16
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: ludexis
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ludexis}
-      POSTGRES_DB: ludexis
+    # POSTGRES_USER, POSTGRES_PASSWORD and POSTGRES_DB; the backend builds its database URL from the same values.
+    env_file: .env
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ludexis"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-ludexis}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,40 +33,76 @@ services:
       retries: 5
 
   backend:
-    <<: *backend
-    command: sh -c "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"
+    image: ghcr.io/ludexis/ludexis-backend:${LUDEXIS_VERSION:-latest}
+    build:
+      context: ./backend
+    restart: unless-stopped
+    command: ludexis server
+    env_file: .env
+    environment:
+      ARTWORK_STORAGE_PATH: /data/artwork
+      # The JWT secret is generated on first start and kept here unless JWT_SECRET_KEY is set.
+      CONFIG_DIR: /data/config
+    volumes:
+      - ludexis_data:/data
+      # Games are only read, never modified. Add a library for /games (or a folder inside it) in the web UI.
+      - ${GAMES_PATH:?Set GAMES_PATH to the folder holding your games}:/games:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz').read()"]
+      test: ["CMD", "ludexis", "health", "server"]
       interval: 10s
       timeout: 5s
       retries: 10
 
   worker:
-    <<: *backend
-    command: celery -A app.tasks.celery_app worker --loglevel=info
-    healthcheck:
-      test: ["CMD-SHELL", "celery -A app.tasks.celery_app inspect ping -d celery@$$HOSTNAME --timeout 10"]
-      interval: 60s
-      timeout: 20s
-      retries: 3
+    image: ghcr.io/ludexis/ludexis-backend:${LUDEXIS_VERSION:-latest}
+    build:
+      context: ./backend
+    restart: unless-stopped
+    command: ludexis worker
+    env_file: .env
+    environment:
+      ARTWORK_STORAGE_PATH: /data/artwork
+      CONFIG_DIR: /data/config
+    volumes:
+      - ludexis_data:/data
+      - ${GAMES_PATH:?Set GAMES_PATH to the folder holding your games}:/games:ro
     depends_on:
       backend:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ludexis", "health", "worker"]
+      interval: 60s
+      timeout: 20s
+      retries: 3
 
   beat:
-    <<: *backend
+    image: ghcr.io/ludexis/ludexis-backend:${LUDEXIS_VERSION:-latest}
+    build:
+      context: ./backend
+    restart: unless-stopped
     # Starts due scheduled tasks every five minutes; schedules are edited in Admin > Scheduled Tasks.
-    command: celery -A app.tasks.celery_app beat --loglevel=info --schedule /tmp/celerybeat-schedule
-    # Beat saves its schedule file every few minutes while it runs.
+    command: ludexis beat
+    env_file: .env
+    environment:
+      ARTWORK_STORAGE_PATH: /data/artwork
+      CONFIG_DIR: /data/config
+    volumes:
+      - ludexis_data:/data
+      - ${GAMES_PATH:?Set GAMES_PATH to the folder holding your games}:/games:ro
+    depends_on:
+      backend:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "find /tmp -maxdepth 1 -name 'celerybeat-schedule*' -mmin -10 | grep -q ."]
+      test: ["CMD", "ludexis", "health", "beat"]
       interval: 60s
       timeout: 10s
       retries: 3
       start_period: 5m
-    depends_on:
-      backend:
-        condition: service_healthy
 
   frontend:
     image: ghcr.io/ludexis/ludexis-frontend:${LUDEXIS_VERSION:-latest}
