@@ -32,7 +32,7 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 | Model / Table | `model:app.models.edge_device.EdgeDevice`, `table:edge_devices` |
 | Module | `module:app.core.edge_auth` |
 | Task | `task:app.tasks.scan_tasks.ingest_edge_report_task` |
-| Migration | `migration:c6d1f8a2e940` |
+| Migration | `migration:c6d1f8a2e940`, `migration:d2f7a9c41b63` |
 | Page | `page:/admin/edge` |
 | ApiModule / TypeModule | `apimod:lib/api/edge`, `typemod:lib/types/edge` |
 
@@ -54,7 +54,7 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 | POST | `/api/edge/agent/metadata` | edge token | A metadata match the device looked up |
 
 ## Tables
-`edge_devices`; `libraries.edge_id`, `drive_id`, `drive_subpath`, `drive_mount` (unique index `uq_libraries_location_path` on `(coalesce(edge_id, ''), path)`); `job_history.edge_id`, `library_id`.
+`edge_devices`; `libraries.edge_id`, `drive_id`, `drive_subpath`, `drive_mount`, `pending_changes` (unique index `uq_libraries_location_path` on `(coalesce(edge_id, ''), path)`); `job_history.edge_id`, `library_id`.
 
 ## Change guide
 - New agent call: route in `backend/app/api/edge_agent.py`, logic in `EdgeService`, the call in `backend/app/edge/agent.py`, a test in `backend/tests/test_edge_api.py`.
@@ -66,5 +66,6 @@ Edge devices are machines (a laptop, another PC) that scan drives attached to th
 - An empty listing for a library with entries, or a reported error (drive not connected, path not found, letter not mapped), sets the library OFFLINE and changes nothing else.
 - Guards keep the server's own behaviour unchanged: the server scan and `verify_archives` skip edge libraries, `JobService.active_job` ignores edge jobs, and `fail_stale_jobs` leaves edge jobs alone until a PENDING one is 7 days old or the device of a RUNNING one has not checked in for an hour.
 - Autoscan (default on): a poll that reports a drive which was not there at the previous poll queues an `INCREMENTAL_SCAN` for the libraries on it, and for offline libraries whose drive is not known yet.
+- Automatic scans (job without `user_id`: autoscan, schedules) hash nothing: files matching by relative path and size are kept with their stored hash, removed files become MISSING, and new or resized files are sent as `pending` and counted in `libraries.pending_changes`. The Libraries page then asks to check them; a scan a user starts hashes only new or changed files and resets the count. A drive that comes back is never re-hashed in full.
 - With `match_metadata` on, the poll hands out up to 20 never-tried entries; the device runs `MetadataService.auto_match` and `MetadataService.get_merged_details` and posts the result, which `EdgeService.apply_metadata` stores with the server's thresholds. The server queues no enrichment for those entries.
 - Flow: `docs/knowledge/flows/edge-scan.md`.

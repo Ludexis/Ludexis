@@ -30,9 +30,11 @@ EdgeAgent.scan(job_id, library)
   library_root(os, library, drives) -> folder, drive, subpath   (by drive_id when known, else the typed path)
   missing -> report {error} (library goes OFFLINE)
   ScannerService._discover_items(root) ; _relative_path
-  GET /api/edge/agent/libraries/{library_id}/state -> hash only new or changed files (all when verify)
+  GET /api/edge/agent/libraries/{library_id}/state
+  job started by a user -> hash only new or changed files (size or time)
+  automatic job (no user_id: drive connected, schedule) -> hash nothing; new or resized files go to "pending"
   POST /api/edge/agent/jobs/{job_id}/progress every 2 s (cancelled -> stop)
-  POST /api/edge/agent/jobs/{job_id}/report  (gzip JSON: library_id, drive, items)
+  POST /api/edge/agent/jobs/{job_id}/report  (gzip JSON: library_id, drive, items, pending relative paths)
 ```
 
 ## 4. Storing the report (server worker)
@@ -40,8 +42,11 @@ EdgeAgent.scan(job_id, library)
 EdgeService.save_report -> /data/edge-reports/<job>.json.gz ; ingest_edge_report_task.apply_async ; job.task_id
 ingest_edge_report_task -> run_job -> EdgeService.ingest -> ScannerService.ingest_report
   drive id, subpath, mount stored on the library ; OFFLINE on error or an empty listing
-  exists(entry) answered from the listing ; hash_files False
-  _ingest_batches (create, update, move by relative_path or hash, MISSING marking, reconnect verify, regroup)
+  exists(entry) answered from the listing plus the pending paths ; hash_files False
+  unhashed items of unchanged size keep the stored hash
+  _ingest_batches (create, update, move by relative_path or hash, MISSING marking, regroup; no re-hash on reconnect)
+  libraries.pending_changes = number of pending files (0 after a scan a user started)
+  frontend/app/(app)/admin/libraries/page.tsx asks "Check for changes" -> scansApi.runIncremental per library
   -> _queue_enrichment (skipped when the device matches metadata itself)
 ```
 
